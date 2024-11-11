@@ -405,3 +405,25 @@ GROUP BY emp_id;
 SELECT SUM(total_sales), client_id
 FROM works_with
 GROUP BY client_id;
+
+-- WILDCARDS --
+
+-- Encontrar clientes que são uma LLC
+SELECT *
+FROM client
+WHERE client_name LIKE '%LLC'; -- % é utilizada para achar um número qualquer de caracteres - Nesse caso, seria Qualquer número de caracteres com LLC terminando essa série
+
+-- Encontrar qualquer branch supplier no mercado de etiquetas
+SELECT *
+FROM branch_supplier
+WHERE supplier_name LIKE '% Label%'; -- Qualquer número de caractere antes e depois da palavra Label
+
+-- Encontrar qualquer funcionário nascido em Outubro (Mês 10)
+SELECT *
+FROM employee
+WHERE birth_day LIKE '____-10%'; -- _ é utilizado para selecionar um número FINITO de caracteres (nesse caso, 4 antes do -), então, seria qualquer conjunto com 4 caracteres antes de -10 e qualquer número de caracteres depois
+
+-- Encontrar qualquer cliente que seja uma escola
+SELECT *
+FROM client
+WHERE client_name LIKE '%school%';
