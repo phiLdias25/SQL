@@ -427,3 +427,68 @@ WHERE birth_day LIKE '____-10%'; -- _ é utilizado para selecionar um número FI
 SELECT *
 FROM client
 WHERE client_name LIKE '%school%';
+
+-- UNIÕES DE QUERIES --
+
+-- Encontrar uma lista de funcionários e filiais
+
+-- Para pegar só os nomes dos funcionários
+SELECT first_name
+FROM employee;
+-- Agora, para pegar só o nome das filiais
+SELECT branch_name
+FROM branch;
+
+-- Para combinar em um só, utilizar o comando UNION:
+SELECT first_name
+FROM employee
+UNION
+SELECT branch_name
+FROM branch; -- Todas as infos combinadas em uma coluna só (Nomes dos func em cima, filiais embaixo)
+
+-- REGRAS DO UNION:
+-- 1: É preciso ter o MESMO NÚMERO DE COLUNAS ENTRE OS SELECTS;
+-- 2: É preciso ter o MESMO TIPO DE DADO ENTRE OS SELECTS;
+
+-- Selecionar uma lista com os nomes de funcionários, filiais e clientes:
+SELECT first_name
+FROM employee
+UNION
+SELECT branch_name
+FROM branch
+UNION
+SELECT client_name
+FROM client;
+
+-- Para mudar o nome da coluna, de modo que faça sentido:
+SELECT first_name AS Company_Names
+FROM employee
+UNION
+SELECT branch_name
+FROM branch
+UNION
+SELECT client_name
+FROM client;
+
+-- Encontrar uma lista de todos os nomes de clientes e fornecedores
+SELECT client_name AS Client_BranchSupp_Names
+FROM client
+UNION
+SELECT supplier_name
+FROM branch_supplier;
+
+-- Fazendo um UNION com mais de uma coluna, podemos fazer a mesma coisa mas também encontrando o id de filial do fornecedor e do cliente:
+SELECT client_name  AS Client_BranchSupp_Names, client.branch_id
+FROM client
+UNION
+SELECT supplier_name, branch_supplier.branch_id
+FROM branch_supplier;
+
+-- Encontrar uma lista com todo o dinheiro gasto ou recebido pela empresa
+SELECT total_sales AS Income_and_Spenditure
+FROM works_with
+UNION
+SELECT salary
+FROM employee;
+
+-- RESUMO: UNION JUNTA DOIS OU MAIS QUERIES FEITAS POR SELECT --
