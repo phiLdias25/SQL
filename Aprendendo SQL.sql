@@ -492,3 +492,31 @@ SELECT salary
 FROM employee;
 
 -- RESUMO: UNION JUNTA DOIS OU MAIS QUERIES FEITAS POR SELECT --
+
+-- JOINS --
+
+INSERT INTO branch VALUES(4, 'Buffalo', NULL, NULL);
+
+SELECT *
+FROM branch;
+
+-- Função do JOIN: Combinar linhas de duas ou mais tabelas baseadas em suas colunas relacionadas
+
+-- Encontrar todas as filiais e o nome de seus gerentes
+SELECT employee.emp_id, employee.first_name, branch.branch_name -- Em SELECT, quando for utilizar mais de uma tabela, necessário colocar a tabela antes do nome da coluna
+FROM employee
+JOIN branch -- Junta todas as info que POSSUEM VALORES das duas bases, também chamado de INNER JOIN
+ON employee.emp_id = branch.mgr_id; -- Determina qual será a COLUNA RELACIONADA ENTRE ELES, igualando pelo sinal de =
+
+-- Mesma coisa, porém agora com um LEFT JOIN
+SELECT employee.emp_id, employee.first_name, branch.branch_name
+FROM employee
+LEFT JOIN branch -- Agora, o JOIN é feito trazendo todas as infos requisitadas da tabela INICIAL, onde está o FROM - No caso, de employee
+ON employee.emp_id = branch.mgr_id;
+
+-- Mesma coisa, com o RIGHT JOIN
+SELECT employee.emp_id, employee.first_name, branch.branch_name
+FROM employee
+RIGHT JOIN branch -- Agora, o JOIN é feito trazendo todas as infos requisitadas da tabela SECUNDÁRIA, onde está o JOIN - No caso, de branch
+ON employee.emp_id = branch.mgr_id;
+
