@@ -627,3 +627,39 @@ SELECT * FROM trigger_test;
 ---- CÓDIGO NA LINHA DE COMANDO ----
 --DROP TRIGGER my_trigger
 ---- ----
+
+---- DIAGRAMAS ER ----
+
+--- Utilizado para mapear as entidades que serão adicionadas ao sistema de base de dados que será criado e as relações entre elas;
+
+-- Tipos de informações presentes em um diagrama ER:
+
+-- 1: Entidade - O objeto que será modelado, e pelo qual armazenaremos informações
+-- Ex - Em um diagrama escolar, uma Entidade pode ser um ALUNO
+
+-- 2: Atributos - Informações específicas sobre uma entidade
+-- Ex - Nome do aluno, média e idade
+
+-- 3: Chave Primária - Atributo que identifica de forma ÚNICA cada entrada na tabela
+-- Ex - ID de cada estudante dentro da base escolar
+
+-- 4: Atributos Compostos - Atributos que podem ser quebrados em sub-atributos menores
+-- Ex: Nome do aluno pode ser composto de dois atributos - Nome e Sobrenome
+
+-- 5: Atributo de Múltiplos Valores - Atributos que podem ter mais de um valor
+-- Ex: Um aluno pode estar em mais de um grupos de estudo
+
+-- 6: Atributo Derivado: Atributo que pode ser derivado de outros atributos
+-- Ex: Um atributo que indica se o aluno passou ou não, com base em sua média
+
+--- PODE-SE CRIAR MAIS DE UMA ENTIDADE, COM DIFERENTES ATRIBUTOS
+
+-- Quando isso acontece, também pode ser necessário criar RELAÇÕES ENTRE AS ENTIDADES, definido como um ATRIBUTO DE RELAÇÃO
+-- Ex: Dado uma nova entidade de Matérias, pode-se ter um atributo que indica se há um aluno que está cursando cada matéria, relacionando com a entidade Aluno
+
+-- NOVOS ATRIBUTOS PODEM SER CRIADOS QUE SE RELACIONAM DIRETAMENTE COM O ATRIBUTO DE RELAÇÃO
+-- Ex: Média específica do aluno em matérias que ele cursa
+
+-- 7: Entidades Fracas - Entidades que SÓ PODEM EXISTIR QUANDO SÃO CLASSIFICADAS A PARTIR DE OUTRA ENTIDADE, não somente a partir de seus atributos
+-- Ex: Provas de uma matéria só existem segundo a matéria, não existe fora do contexto da entidade Matéria
+-- SÃO RELACIONADAS PELA RELAÇÃO DE IDENTIFICAÇÃO
