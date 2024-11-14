@@ -552,3 +552,78 @@ WHERE client.branch_id = (
     WHERE branch.mgr_id = 102
     LIMIT 1 -- Para igualdade, caso queira somente um resultado, deve-se colocar o LIMIT 1. Caso MS fosse gerente de mais filiais, todos os resultados apareceriam aqui
 ); -- Agora, conseguimos, a partir do SELECT original após =, encontrar, dentro da base de clientes, quais estão relacionados ao ID da filial relacionada ao ID de Michael Scott
+
+----- TRIGGERS -----
+--- Um TRIGGER é um bloco de código que cria uma ação que deve ser realizada quando alguma outra ação é feita na base de dados (ex: Adicionar ou Deletar novas infos em uma base de dados)
+
+CREATE TABLE trigger_test(
+    message VARCHAR(100)
+);
+
+--- Os TRIGGERS devem ser instalados na LINHA DE COMANDO DO MySQL
+
+---- CÓDIGO NA LINHA DE COMANDO ----
+--DELIMITER $$ -- Troca o delimitador ; por $$, já que o ; está sendo utilizado na linha INSERT INTO
+--CREATE
+    --TRIGGER my_trigger BEFORE INSERT
+    --ON employee
+    --FOR EACH ROW BEGIN -- Antes de qualquer coisa ser colocada na base de funcionários, a linha de baixo será executada
+        --INSERT INTO trigger_test VALUES('added new employee'); -- O valor 'added new employee' será adicionado em trigger_test toda vez que algo for adicionado na base employee
+    --END$$
+--DELIMITER ; -- O delimitador não pode ser alterado no PopSQL, por isso ele deve ser usado na linha de comando
+---- -----
+
+-- Adicionando mais um funcionário
+INSERT INTO employee
+    VALUES(109, 'Oscar', 'Martinez', '1962-02-19', 'M', 69000, 106, 3);
+
+SELECT * FROM trigger_test; -- O TRIGGER atualizou com a nova entrada, dado a adição do novo funcionário
+
+--- Agora, o TRIGGER atualiza com um ATRIBUTO NOVO INSERIDO NA BASE DE DADOS:
+---- CÓDIGO NA LINHA DE COMANDO ----
+--DELIMITER $$
+--CREATE
+    --TRIGGER my_trigger1 BEFORE INSERT
+    --ON employee
+    --FOR EACH ROW BEGIN
+        --INSERT INTO trigger_test VALUES(NEW.first_name);
+    --END$$
+--DELIMITER ; -- Esse TRIGGER irá atualizar com o nome do novo funcionário, quando ele for adicionado a base de dados
+---- -----
+
+-- Adicionando um novo funcionário:
+INSERT INTO employee
+    VALUES(110, 'Kevin', 'Malone', '1978-02-19', 'M', 69000, 106, 3);
+
+SELECT * FROM trigger_test; -- Agora, o TRIGGER também informa o nome do novo funcionário
+
+-- É possível criar TRIGGERS mais complexos, com IF's
+---- CÓDIGO NA LINHA DE COMANDO ----
+--DELIMITER $$
+--CREATE
+    --TRIGGER my_trigger2 BEFORE INSERT
+    --ON employee
+    --FOR EACH ROW BEGIN
+        --IF NEW.sex = 'M' THEN
+            --INSERT INTO trigger_test VALUES('added male employee');
+        --ELSEIF NEW.sex = 'F' THEN
+            --INSERT INTO trigger_test VALUES('added female employee');
+        --ELSE
+            --INSERT INTO trigger_test VALUES('added other employee');
+        --END IF;
+    --END$$
+--DELIMITER ; -- Esse TRIGGER irá atualizar com o gênero do novo funcionário, quando ele for adicionado a base de dados
+---- -----
+
+-- Adicionando uma nova funcionária
+INSERT INTO employee
+    VALUES(111, 'Pam', 'Beesley', '1988-02-19', 'F', 69000, 106, 3);
+
+SELECT * FROM trigger_test;
+
+-- TRIGGER podem ser criados tanto para novos INSERTs, como para UPDATEs, DELETEs, assim como AFTER além de BEFORE, ou seja, depois de fazer a alteração
+
+-- Para EXCLUIR TRIGGERS criados:
+---- CÓDIGO NA LINHA DE COMANDO ----
+--DROP TRIGGER my_trigger
+---- ----
