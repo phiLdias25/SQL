@@ -103,3 +103,77 @@ GROUP BY JobTitle
 HAVING AVG(Salary) > 45000
 ORDER BY AVG(Salary); -- HAVING deve vir ANTES DA ORDENAÇÃO (ORDER BY)
 
+---- Atualizando e Deletando Dados ----
+-- Enquanto INSERT cria novas colunas, UPDATE vai ATUALIZAR UMA LINHA JÁ EXISTENTE, e DELETE vai DELETAR UMA LINHA COMPLETA
+
+-- Adicionando novas infos
+INSERT INTO EmployeeDemographics
+VALUES(NULL,'Holly','Flax',NULL,NULL);
+
+-- Para atualizar os valores da nova funcionária:
+UPDATE EmployeeDemographics
+SET EmployeeID = 1010
+WHERE FirstName = 'Holly' AND LastName = 'Flax';
+
+-- É possível atualizar mais de uma info na mesma query:
+UPDATE EmployeeDemographics
+SET Age = 31, Gender = 'Female'
+WHERE FirstName = 'Holly' AND LastName = 'Flax';
+
+-- Para deletar uma linha:
+DELETE FROM EmployeeDemographics
+WHERE EmployeeID = 1005;
+
+--- Uma possibilidade para tomar cuidado com o DELETE é utilizar um SELECT antes, para evitar deletar informações que não deveriam ser apagadas
+
+---- ALIASING ----
+-- Temporariamente alterar o nome de alguma coluna para facilitar o entendimento
+
+SELECT FirstName AS FName
+FROM EmployeeDemographics;
+
+--É possível fazer sem o AS
+SELECT FirstName FName
+FROM EmployeeDemographics;
+
+
+-- Criar uma coluna com o nome completo dos funcionários
+SELECT CONCAT(FirstName, ' ' , LastName) AS FullName -- CONCAT serve para concatenar strings em uma coluna só
+FROM EmployeeDemographics;
+
+-- Encontrar a idade média dos funcionários
+SELECT AVG(Age) as AverageAge
+FROM EmployeeDemographics;
+
+-- É possível criar um ALIAS para a tabela
+SELECT Demo.EmployeeID
+FROM EmployeeDemographics AS Demo;
+
+-- Juntando com a base de salário
+SELECT Demo.EmployeeID, Sal.Salary
+FROM EmployeeDemographics AS Demo
+JOIN EmployeeSalary AS Sal
+ON Demo.EmployeeID = Sal.EmployeeID;
+
+---- PARTITION BY ----
+-- Divide os resultados da query
+
+-- Fazendo o join das duas tabelas
+SELECT *
+FROM EmployeeDemographics dem
+JOIN EmployeeSalary sal
+ON dem.EmployeeID = sal.EmployeeID;
+
+-- Separando a base por gênero:
+SELECT FirstName, LastName, Gender, Salary,
+COUNT(Gender) OVER (PARTITION BY Gender) as TotalGender
+FROM EmployeeDemographics dem
+JOIN EmployeeSalary sal
+ON dem.EmployeeID = sal.EmployeeID; -- Mostra não só os funcionários, mas o total de homens e mulheres na empresa
+
+--- Diferente do Group By, o Partition isola uma coluna para realizar o agrupamento
+SELECT Gender, COUNT(Gender)
+FROM EmployeeDemographics dem
+JOIN EmployeeSalary sal
+ON dem.EmployeeID = sal.EmployeeID
+GROUP BY Gender; -- Para obter o mesmo agrupamento com o GROUP BY, não conseguimos manter os outros atributos na base
