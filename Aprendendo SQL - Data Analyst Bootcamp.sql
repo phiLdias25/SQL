@@ -288,5 +288,42 @@ ON SUBSTRING(err.FirstName, 1, 3) = SUBSTRING(dem.FirstName, 1, 3); -- Exemplo d
 SELECT FirstName, LOWER(FirstName) -- LOWER torna todos caracteres minúsculos
 FROM EmployeeErrors;
 
+---- STORED PROCEDURES ----
+--- Vários STATEMENTS que podem ser armazenados na base de dados e ser utilizado por qualquer usuário, para diferentes dados
+
+-- PROCEDURE que retorna as variáveis da tabela EmployeeDemographics
+CREATE PROCEDURE Test()
+BEGIN
+    SELECT *
+    FROM EmployeeDemographics;
+END;
+
+CALL Test(); -- Modo de ativar o PROCEDURE
+
+-- Criar um PROCEDURE para criar outra tabela e inserir dados nela
+CREATE PROCEDURE Temp_Employee()
+BEGIN
+    CREATE TEMPORARY TABLE Temp_Employee2 (
+    JobTitle varchar(50),
+    EmployeesPerJob int,
+    AvgAge int,
+    AvgSalary int
+    );
+
+    INSERT INTO Temp_Employee2
+    SELECT JobTitle, Count(JobTitle), AVG(Age), AVG(Salary)
+    FROM EmployeeDemographics emp
+    JOIN EmployeeSalary sal
+    ON emp.EmployeeID = sal.EmployeeID
+    GROUP BY JobTitle;
+
+    SELECT *
+    FROM Temp_Employee2;
+END;
+
+CALL Temp_Employee();
+
+--- PELO POPSQL, não é possível alterar o PROCEDURE já criado, é necessário fazer um DROP e recriar o PROCEDURE
+
 SELECT FirstName, UPPER(FirstName) -- UPPER torna todos caracteres maiúsculos
 FROM EmployeeErrors;
