@@ -177,3 +177,116 @@ FROM EmployeeDemographics dem
 JOIN EmployeeSalary sal
 ON dem.EmployeeID = sal.EmployeeID
 GROUP BY Gender; -- Para obter o mesmo agrupamento com o GROUP BY, não conseguimos manter os outros atributos na base
+
+---- CTE's (Common Table Expression) ----
+-- Usado para manipular subqueries
+
+-- Criar outra base chamada CTE_Employee
+WITH CTE_Employee AS (
+    SELECT FirstName, LastName, Gender, Salary,
+    COUNT(Gender) OVER (PARTITION BY Gender) as TotalGender
+    FROM EmployeeDemographics dem
+    JOIN EmployeeSalary sal
+    ON dem.EmployeeID = sal.EmployeeID
+    WHERE Salary > '45000') -- Esse SELECT seleciona previamente um novo conjunto de dados para criar a tabela CTE_Employee, a partir dos dados de outra tabela
+SELECT *
+FROM CTE_Employee;
+
+-- A CTE não roda sozinha, ela é CRIADA PELA QUERY, e não é salva em outro lugar
+
+---- TEMP TABLES ----
+-- Bases temporárias
+
+CREATE TEMPORARY TABLE temp_Employee (
+    Employee_ID int,
+    JobTitle varchar(100),
+    Salary int
+);
+
+SELECT *
+FROM temp_Employee;
+
+INSERT INTO temp_Employee VALUES(
+    '1001', 'HR', '45000'
+);
+
+INSERT INTO temp_Employee
+SELECT *
+FROM EmployeeSalary;
+
+-- A tabela temporária serve para criar subseções de uma base maior, para que seja mais fácil realizar algumas queries
+
+CREATE TEMPORARY TABLE Temp_Employee2 (
+    JobTitle varchar(50),
+    EmployeesPerJob int,
+    AvgAge int,
+    AvgSalary int
+);
+
+INSERT INTO Temp_Employee2
+SELECT JobTitle, Count(JobTitle), AVG(Age), AVG(Salary)
+FROM EmployeeDemographics emp
+JOIN EmployeeSalary sal
+ON emp.EmployeeID = sal.EmployeeID
+GROUP BY JobTitle;
+
+SELECT *
+FROM Temp_Employee2; -- Com a base criada, não é preciso ficar realizando o select com o join todas as vezes, de forma a facilitar cálculos e reduzir processamento
+
+---- STRING FUNCTIONS ---- 
+-- Funções realizáveis com strings
+
+SELECT *
+FROM EmployeeDemographics;
+
+INSERT INTO EmployeeDemographics VALUES(
+    '1005', 'Toby', 'Flenderson', 35, 'Male'
+);
+
+CREATE TABLE EmployeeErrors (
+    EmployeeID varchar(50),
+    FirstName varchar(50),
+    LastName varchar(50)
+);
+
+INSERT INTO EmployeeErrors VALUES
+('1001  ', 'Jimbo', 'Halbert'),
+('  1002', 'Pamela', 'Beasely'),
+('1005', 'TOby', 'Flenderson - Fired');
+
+SELECT *
+FROM EmployeeErrors;
+
+--- Comandos LTRIM, RTRIM e TRIM
+
+SELECT EmployeeID, TRIM(EmployeeID) AS IDTRIM -- TRIM Tira espaços tanto do lado esquerdo quanto direito
+FROM EmployeeErrors;
+
+SELECT EmployeeID, LTRIM(EmployeeID) AS IDTRIM -- LTRIM Tira espaços do lado esquerdo
+FROM EmployeeErrors;
+
+SELECT EmployeeID, RTRIM(EmployeeID) AS IDTRIM -- RTRIM Tira espaços do lado direito
+FROM EmployeeErrors;
+
+--- Comando REPLACE
+
+SELECT LastName, REPLACE(LastName, '- Fired', '') AS LastName_Fixed -- REPLACE muda uma parte das strings de uma coluna
+FROM EmployeeErrors;
+
+--- Comando SUBSTRING
+
+SELECT SUBSTRING(FirstName, 1, 3) -- Seleciona a coluna FirstName, do PRIMEIRO CARACTERE ATÉ O TERCEIRO
+FROM EmployeeErrors;
+
+SELECT err.FirstName, SUBSTRING(err.FirstName, 1, 3), dem.FirstName, SUBSTRING(dem.FirstName, 1, 3)
+FROM EmployeeErrors err
+JOIN EmployeeDemographics dem
+ON SUBSTRING(err.FirstName, 1, 3) = SUBSTRING(dem.FirstName, 1, 3); -- Exemplo de FUZZY MATCH (Apesar de não serem exatamente iguais, é possível igualar strings a partir da SUBSTRING de cada um)
+
+-- Comandos UPPER e LOWER
+
+SELECT FirstName, LOWER(FirstName) -- LOWER torna todos caracteres minúsculos
+FROM EmployeeErrors;
+
+SELECT FirstName, UPPER(FirstName) -- UPPER torna todos caracteres maiúsculos
+FROM EmployeeErrors;
